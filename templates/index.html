@@ -6,8 +6,13 @@
 
 {% block body %}
 <ul>
-  {% for titolo in titoli %}
-    <li>{{ titolo }}</li>
+    <form action="/" method="POST">
+        <input type="text" name="search_terms" id="search_terms">
+        <input type="submit" value="Search">
+   </form>
+
+   {% for article in articles %}
+    <li> <a href="{{article['url']}}"> {{ article['title'] }} </a> </li>
   {% endfor %}
 </ul>
 
