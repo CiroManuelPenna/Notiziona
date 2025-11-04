@@ -6,14 +6,31 @@
 
 {% block body %}
 <ul>
-    <form action="/" method="POST">
-        <input type="text" name="search_terms" id="search_terms">
-        <input type="submit" value="Search">
-   </form>
+  <form action="/" method="POST">
+    <input type="text" name="search_terms" id="search_terms">
+    <input type="submit" value="Search">
+  </form>
 
-   {% for article in articles %}
-    <li> <a href="{{article['url']}}"> {{ article['title'] }} </a> </li>
+  <div id="big_container">
+  {% for article in articles %}
+    <a href="{{article['url']}}"> 
+      <div class="news_container">
+        <img class="news_image" src="{{article['urlToImage']}}" alt="">
+        <br>
+        <strong>{{ article['title'] }} </strong>
+      </div>
+    </a>
   {% endfor %}
+
+    <!--Test
+    <div class="news_container">
+        <img class="news_image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Ciao_PX.jpg/1200px-Ciao_PX.jpg" alt="">
+        <br>
+        <strong>Ciao </strong>
+    </div>
+    -->
+
+  </div>
 </ul>
 
 {% endblock %}
