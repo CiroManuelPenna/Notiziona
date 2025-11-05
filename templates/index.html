@@ -18,6 +18,9 @@
         <img class="news_image" src="{{article['urlToImage']}}" alt="">
         <br>
         <strong>{{ article['title'] }} </strong>
+        <button class="fav_button" data-url="{{ article['url'] }}">
+        ★ Add to Favorites
+        </button>
       </div>
     </a>
   {% endfor %}
@@ -33,4 +36,5 @@
   </div>
 </ul>
 
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 {% endblock %}
