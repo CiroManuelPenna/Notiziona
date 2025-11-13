@@ -23,13 +23,27 @@ def get_articles(params):
         print("Could not satisfy the request")
         return []
     
+def get_top_headlines(params=None):
+    if params is None:
+        # minimal valid parameter (NewsAPI requires at least one)
+        params = {"country": "us"}
+
+    response = requests.get(f"{BASE_URL}/top-headlines", headers=HEADERS, params=params)
+    data = response.json()
+
+    if data.get("status") == "ok":
+        return data.get("articles", [])
+    else:
+        print("Could not satisfy the request")
+        return []
+    
 @app.route("/", methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         search_terms = request.form['search_terms']
         params = {
             "q": search_terms,  # keyword(s)
-            "language": "it",
+            "language": "en",
             "from": (today - timedelta(days=7)).isoformat(),
             "to": today.isoformat(),
             "sortBy": "publishedAt",          # relevancy | popularity | publishedAt
@@ -41,7 +55,8 @@ def index():
 
         return render_template('index.html', articles=articles)
     else:
-        return render_template('index.html', articles=[])
+        articles = get_top_headlines()
+        return render_template('index.html', articles=articles)
 
 if __name__ == "__main__":
     app.run(debug=True)
