@@ -6,6 +6,11 @@
 
 {% block body %}
 <ul>
+  <form action="/search" method="POST">
+    <input type="text" name="search_terms" id="search_terms">
+    <input type="submit" value="Search">
+  </form>
+
   <div id="big_container">
   {% for article in articles %}
     <a href="{{article['url']}}"> 
@@ -19,15 +24,6 @@
       </div>
     </a>
   {% endfor %}
-
-    <!--Test
-    <div class="news_container">
-        <img class="news_image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Ciao_PX.jpg/1200px-Ciao_PX.jpg" alt="">
-        <br>
-        <strong>Ciao </strong>
-    </div>
-    -->
-
   </div>
 </ul>
 

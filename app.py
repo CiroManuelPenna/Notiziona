@@ -37,8 +37,13 @@ def get_top_headlines(params=None):
         print("Could not satisfy the request")
         return []
     
-@app.route("/", methods=['GET', 'POST'])
+@app.route("/", methods=['GET'])
 def index():
+    articles = get_top_headlines()
+    return render_template('index.html', articles=articles)
+
+@app.route("/search", methods=['GET', 'POST'])
+def search_page():
     if request.method == 'POST':
         search_terms = request.form['search_terms']
         params = {
@@ -53,10 +58,11 @@ def index():
 
         articles = get_articles(params=params)
 
-        return render_template('index.html', articles=articles)
+        return render_template('search_page.html', articles=articles)
     else:
-        articles = get_top_headlines()
-        return render_template('index.html', articles=articles)
+        return render_template('search_page.html', articles=[])
+    
+
 
 if __name__ == "__main__":
     app.run(debug=True)
