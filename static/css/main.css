@@ -74,3 +74,36 @@ a {
   background-color: white;/*#ff9800;*/
   border: 1px solid black;
 }
+
+nav {
+    background:#f8f9fa;
+    padding: 10px 0;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: left;
+    gap: 15px;
+    margin: 0;
+    padding: 0;
+}
+
+nav li {
+    margin: 0;
+    padding: 0;
+}
+
+nav a {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #007BFF;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+nav a:hover {
+    background: #005fcc;
+}
