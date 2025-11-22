@@ -62,6 +62,9 @@ def search_page():
     else:
         return render_template('search_page.html', articles=[])
     
+@app.route("/favorites", methods=['GET'])
+def favorites():
+    return render_template('favorites.html')
 
 
 if __name__ == "__main__":

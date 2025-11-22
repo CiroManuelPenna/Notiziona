@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<style>
+  #favorites_page_button{
+    background-color: white;
+    border: 1px solid black;
+    color: black;
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<ul>
+  <div id="big_container">
+  {% for article in articles %}
+    <a href="{{article['url']}}"> 
+      <div class="news_container">
+        <img class="news_image" src="{{article['urlToImage']}}" alt="">
+        <br>
+        <strong>{{ article['title'] }} </strong>
+        <button class="fav_button" data-url="{{ article['url'] }}" data-image="{{article['urlToImage']}}" data-title="{{ article['title'] }}">
+        ★ Add to favorites
+        </button>
+      </div>
+    </a>
+  {% endfor %}
+  </div>
+</ul>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const FAVORITES_KEY = "favorites";
+  const container = document.getElementById("big_container");
+
+  const favorites = new Map(JSON.parse(localStorage.getItem(FAVORITES_KEY)) || []);
+
+  if (favorites.size === 0) {
+    container.innerHTML = "<p>No favorites yet.</p>";
+    return;
+  }
+
+  // Build the same markup structure used on your main page
+  favorites.forEach(({ url, image, title }) => {
+    const wrapper = document.createElement("a");
+    wrapper.href = url;
+
+    wrapper.innerHTML = `
+      <div class="news_container">
+        <img class="news_image" src="${image}" alt="">
+        <br>
+        <strong>${title}</strong>
+        <button class="fav_button"
+                data-url="${url}"
+                data-image="${image}"
+                data-title="${title}">
+            ★ Add to favorites
+        </button>
+      </div>
+    `;
+
+    container.appendChild(wrapper);
+  });
+});
+</script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% endblock %}
