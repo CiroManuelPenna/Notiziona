@@ -19,8 +19,15 @@
         <img class="news_image" src="{{article['urlToImage']}}" alt="">
         <br>
         <strong>{{ article['title'] }} </strong>
-        <button class="fav_button" data-url="{{ article['url'] }}" data-image="{{article['urlToImage']}}" data-title="{{ article['title'] }}">
-        ★ Add to favorites
+        <button class="fav_button {% if is_favorited(article['url']) %}active{% endif %}"
+                data-url="{{ article['url'] }}"
+                data-title="{{ article['title'] }}"
+                data-image="{{ article['urlToImage'] }}">
+            {% if is_favorited(article['url']) %}
+                In your favorites
+            {% else %}
+                ★ Add to favorites
+            {% endif %}
         </button>
       </div>
     </a>
