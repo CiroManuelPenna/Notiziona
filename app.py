@@ -13,6 +13,15 @@ load_dotenv()  # reads .env file
 API_KEY = os.getenv("NEWS_API_KEY")
 BASE_URL = "https://newsapi.org/v2"
 HEADERS = {"X-Api-Key": API_KEY}
+CATEGORIES = [
+    "business",
+    "entertainment",
+    "general",
+    "health",
+    "science",
+    "sports",
+    "technology"
+]
 today = datetime.today()
 
 class Article(db.Model):
@@ -24,6 +33,10 @@ class Article(db.Model):
     def __repr__(self):
         return '<Article %r>' % self.id
     
+class FavoriteTerm(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    term = db.Column(db.String(200), unique=True, nullable=False)
+    type = db.Column(db.String(50), nullable=False)   # "keyword" or "category"
 
 with app.app_context():
     db.create_all()
@@ -33,6 +46,11 @@ def is_favorited(url):
     return Article.query.filter_by(url=url).first() is not None
 
 app.jinja_env.globals.update(is_favorited=is_favorited)
+
+def is_favorite_term(term, type_):
+    return FavoriteTerm.query.filter_by(term=term, type=type_).first() is not None
+
+app.jinja_env.globals.update(is_favorite_term=is_favorite_term)
 
 
 def get_articles(params):
@@ -66,23 +84,46 @@ def index():
 
 @app.route("/search", methods=['GET', 'POST'])
 def search_page():
-    if request.method == 'POST':
-        search_terms = request.form['search_terms']
-        params = {
-            "q": search_terms,  # keyword(s)
-            "language": "en",
-            "from": (today - timedelta(days=7)).isoformat(),
-            "to": today.isoformat(),
-            "sortBy": "publishedAt",          # relevancy | popularity | publishedAt
-            "pageSize": 50,                   # up to 100
-            "page": 1
-        }
+    if request.method == "POST":
+        keyword = request.form.get("search_terms")
+        category = request.form.get("category")
 
-        articles = get_articles(params=params)
+        if category and keyword:
+            params = {
+                "q": keyword,
+                "category": category,
+                "country": "us",
+                "pageSize": 50
+            }
+            articles = get_top_headlines(params)
+        elif category:
+            params = {
+                "category": category,
+                "country": "us",
+                "pageSize": 50
+            }
+            articles = get_top_headlines(params)
+        else:
+            params = {
+                "q": keyword,
+                "language": "en",
+                "from": (today - timedelta(days=7)).isoformat(),
+                "to": today.isoformat(),
+                "sortBy": "publishedAt",
+                "pageSize": 50
+            }
+            articles = get_articles(params)
 
-        return render_template('search_page.html', articles=articles)
-    else:
-        return render_template('search_page.html', articles=[])
+        return render_template(
+            "search_page.html",
+            articles=articles,
+            categories=CATEGORIES,
+            keyword=keyword,
+            selected_category=category
+        )
+
+    return render_template("search_page.html", articles=[], categories=CATEGORIES)
+
     
 @app.route("/favorites", methods=['GET'])
 def favorites():
@@ -120,6 +161,34 @@ def api_favorite_remove():
     db.session.commit()
 
     return jsonify({"status": "removed"}), 200
+
+@app.route("/api/favterm/add", methods=["POST"])
+def api_term_add():
+    data = request.get_json()
+    term = data["term"]
+    type_ = data["type"]
+
+    existing = FavoriteTerm.query.filter_by(term=term).first()
+    if existing:
+        return {"status": "exists"}
+
+    new = FavoriteTerm(term=term, type=type_)
+    db.session.add(new)
+    db.session.commit()
+    return {"status": "added"}
+
+@app.route("/api/favterm/remove", methods=["POST"])
+def api_term_remove():
+    data = request.get_json()
+    term = data["term"]
+
+    existing = FavoriteTerm.query.filter_by(term=term).first()
+    if not existing:
+        return {"status": "not_found"}, 404
+
+    db.session.delete(existing)
+    db.session.commit()
+    return {"status": "removed"}
 
 
 if __name__ == "__main__":

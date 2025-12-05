@@ -12,10 +12,44 @@
 
 {% block body %}
 <ul>
-  <form action="/search" method="POST">
+  <!-- <form action="/search" method="POST">
     <input type="text" name="search_terms" id="search_terms">
     <input type="submit" value="Search">
+  </form> -->
+
+  <form action="/search" method="POST">
+      <!-- keyword search -->
+      <label for="search_terms">Keyword</label>
+      <input type="text" name="search_terms" id="search_terms">
+
+      <!-- category search -->
+      <label for="category">Category</label>
+      <select name="category" id="category">
+          <option value="">-- Select category --</option>
+          {% for cat in categories %}
+              <option value="{{ cat }}">{{ cat }}</option>
+          {% endfor %}
+      </select>
+
+      <input type="submit" value="Search">
   </form>
+
+  {% if keyword %}
+    <button class="fav_term_button {% if is_favorite_term(keyword, 'keyword') %}active{% endif %}"
+            data-term="{{ keyword }}"
+            data-type="keyword">
+        ★ Add keyword to favorites
+    </button>
+  {% endif %}
+
+  {% if selected_category %}
+    <button class="fav_term_button {% if is_favorite_term(selected_category, 'category') %}active{% endif %}"
+            data-term="{{ selected_category }}"
+            data-type="category">
+            ★ Add category to favorites
+    </button>
+  {% endif %}
+
 
   <div id="big_container">
   {% for article in articles %}
