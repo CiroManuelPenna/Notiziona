@@ -1,10 +1,10 @@
-#example script
 from flask import Flask, render_template, url_for, request, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import requests
 import os
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
+from random import sample, shuffle
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///notiziona.db'
@@ -129,6 +129,55 @@ def search_page():
 def favorites():
     articles = Article.query.all()
     return render_template("favorites.html", articles=articles)
+
+@app.route("/feed", methods=['GET'])
+def feed():
+    favorite_terms = FavoriteTerm.query.all()
+
+    if not favorite_terms:
+        return render_template("feed.html", articles=[])
+
+    # choose N <= 5 terms randomly
+    N = min(5, len(favorite_terms))
+    selected_terms = sample(favorite_terms, N)
+
+    articles = []
+    today = datetime.utcnow()
+    one_week_ago = today - timedelta(days=7)
+
+    for term in selected_terms:
+
+        if term.type == "category":
+            params = {
+                "category": term.term,
+                "country": "us",
+                "pageSize": 10
+            }
+            new_articles = get_top_headlines(params=params)
+
+        elif term.type == "keyword":
+            params = {
+                "q": term.term,
+                "language": "en",
+                "from": one_week_ago.isoformat(),
+                "to": today.isoformat(),
+                "pageSize": 10
+            }
+            new_articles = get_articles(params=params)
+
+        articles.extend(new_articles)
+
+    # remove duplicates (based on URL)
+    unique = {}
+    for a in articles:
+        url = a.get("url")
+        if url and url not in unique:
+            unique[url] = a
+
+    final_articles = list(unique.values())
+    shuffle(final_articles)
+
+    return render_template("feed.html", articles=final_articles)
 
 @app.route("/api/favorite/add", methods=["POST"])
 def api_favorite_add():

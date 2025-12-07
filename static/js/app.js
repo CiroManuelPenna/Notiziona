@@ -68,7 +68,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (res.ok) {
                     btn.classList.remove("active");
-                    btn.innerHTML = "★ Add to favorites";
+                    btn.innerHTML = type === "category"
+                    ? "★ Add this category to favorites"
+                    : "★ Add this keyword to favorites";
                 }
 
             } else {
@@ -80,7 +82,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (res.ok) {
                     btn.classList.add("active");
-                    btn.innerHTML = "In your favorites";
+                    btn.innerHTML = type === "category"
+                    ? "Category in your favorites"
+                    : "Keyword in your favorites";
                 }
             }
         });
