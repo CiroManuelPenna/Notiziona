@@ -5,15 +5,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const title = button.dataset.title;
     const image = button.dataset.image;
 
-    if (button.classList.contains("active")) {
+    const isActive = button.classList.contains("active");
+
+    if (isActive) {
       button.innerHTML = "In your favorites";
     }
 
     button.addEventListener("click", async (event) => {
       event.preventDefault();
       event.stopPropagation();
-
-      const isActive = button.classList.contains("active");
 
       if (isActive) {
         const res = await fetch("/api/favorite/remove", {
@@ -47,7 +47,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const term = btn.dataset.term;
         const type = btn.dataset.type;
 
-        if (btn.classList.contains("active")) {
+        const isActive = btn.classList.contains("active");
+
+        if (isActive) {
           btn.innerHTML = type === "category"
             ? "Category in your favorites"
             : "Keyword in your favorites";
@@ -56,8 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.addEventListener("click", async (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-
-            const isActive = btn.classList.contains("active");
 
             if (isActive) {
                 const res = await fetch("/api/favterm/remove", {

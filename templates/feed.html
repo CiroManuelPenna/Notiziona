@@ -11,7 +11,6 @@
 {% endblock %}
 
 {% block body %}
-<ul>
 <div id="big_container">
     {% for article in articles %}
     <a href="{{article['url']}}"> 
@@ -33,7 +32,6 @@
     </a>
     {% endfor %}
   </div>
-</ul>
 
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 {% endblock %}

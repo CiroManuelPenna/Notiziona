@@ -219,12 +219,12 @@ def api_term_add():
 
     existing = FavoriteTerm.query.filter_by(term=term).first()
     if existing:
-        return {"status": "exists"}
+        return jsonify({"status": "exists"}), 200
 
     new = FavoriteTerm(term=term, type=type_)
     db.session.add(new)
     db.session.commit()
-    return {"status": "added"}
+    return jsonify({"status": "added"}), 200
 
 @app.route("/api/favterm/remove", methods=["POST"])
 def api_term_remove():
@@ -233,11 +233,11 @@ def api_term_remove():
 
     existing = FavoriteTerm.query.filter_by(term=term).first()
     if not existing:
-        return {"status": "not_found"}, 404
+        return jsonify({"status": "not_found"}), 404
 
     db.session.delete(existing)
     db.session.commit()
-    return {"status": "removed"}
+    return jsonify({"status": "removed"}), 200
 
 
 if __name__ == "__main__":
